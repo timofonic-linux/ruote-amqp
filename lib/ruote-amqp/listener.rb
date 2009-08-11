@@ -1,8 +1,5 @@
-require 'openwfe/service'
-require 'openwfe/listeners/listener'
-
 module RuoteAMQP
-
+ 
   #
   # = AMQP Listeners
   #
@@ -37,56 +34,43 @@ module RuoteAMQP
   # to the correct direct exchange specified in the workitem
   # attributes.
   #
-  class Listener < OpenWFE::Service
-    include OpenWFE::WorkItemListener
-
+  class Listener
+    include Ruote::EngineContext
+ 
     class << self
-
-      # Listening queue
+ 
+      # Listening queue - set this before initialization
       attr_writer :queue
-
+ 
       def queue
         @queue ||= 'ruote'
       end
-
+ 
     end
-
-    # Only one option is used (:queue) to determine where to listen
-    # for work
-    def initialize( service_name, options )
-
-      if q = options.delete(:queue)
-        self.class.queue = q
-      end
-
-      super( service_name, options )
-
+ 
+    def initialize 
+ 
       #if AMQP.connection.nil?
         @em_thread = Thread.new { EM.run } unless EM.reactor_running?
       #end
-
+ 
       MQ.queue( self.class.queue, :durable => true ).subscribe do |message|
         workitem = decode_workitem( message )
-        ldebug { "workitem from '#{self.class.queue}': #{workitem.inspect}" }
-        handle_item( workitem )
+        engine.reply( workitem )
       end
     end
-
+ 
     def stop
-      linfo { "Stopping..." }
-
       AMQP.stop { EM.stop } #if EM.reactor_running? }
       @em_thread.join if @em_thread
     end
-
+ 
     private
-
+ 
     # Complicated guesswork that needs to happen here to detect the format
     def decode_workitem( msg )
-      ldebug { "decoding workitem from: #{msg}" }
-
-      hash = OpenWFE::Json.decode(msg)
-      OpenWFE.workitem_from_h( hash )
+      hash = Ruote::Json.decode( msg )
+      Ruote::Workitem.from_h( hash )
     end
   end
 end
