@@ -2,18 +2,29 @@ require File.dirname(__FILE__) + '/spec_helper'
 
 describe RuoteAMQP::Listener do
   it "should handle replies" do
-    pdef = <<-EOF
-    class AmqpParticipant2 < OpenWFE::ProcessDefinition
+#cmm -11
+    # pdef = <<-EOF
+    # class AmqpParticipant2 < OpenWFE::ProcessDefinition
 
+    #   set :field => 'foo', :value => 'foo'
+
+    #   sequence do
+    #     echo '${f:foo}'
+    #     amqp :queue => 'test3'
+    #     echo '${f:foo}'
+    #   end
+    # end
+    # EOF
+
+#cmm +9
+    pdef = Ruote.process_definition :name => 'amqpParticipant2' do
       set :field => 'foo', :value => 'foo'
-
       sequence do
         echo '${f:foo}'
         amqp :queue => 'test3'
         echo '${f:foo}'
       end
     end
-    EOF
 
     @engine.register_participant( :amqp, RuoteAMQP::Participant )
 

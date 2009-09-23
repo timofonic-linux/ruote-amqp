@@ -50,6 +50,13 @@ Please be sure to have read the requirements section above
 
 * sudo gem install ruote-amqp
 
+
+==  RUN TEST
+
+Example to run an individual test 
+
+$ spec --debugger spec/ruote_amqp_spec.rb --format specdoc
+
 == DAEMON-KIT:
 
 Although the RuoteAMQP gem will work perfectly well with any AMQP consumer,

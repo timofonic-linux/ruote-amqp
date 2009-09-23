@@ -1,3 +1,7 @@
+
+debugger
+#$:.unshift('/home/charles/workspace/ruote2.0/lib')
+
 module RuoteAMQP
  
   # = AMQP Participants
@@ -110,7 +114,11 @@ module RuoteAMQP
   # participant, and messages are marked as persistent by default (see
   # #RuoteAMQP)
   #
+#cmm +1
+require 'ruote/part/local_participant'
+
   class Participant
+
     include Ruote::LocalParticipant
  
     # Accepts an options hash with the following keys:

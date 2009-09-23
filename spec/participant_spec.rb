@@ -4,15 +4,24 @@ describe RuoteAMQP::Participant, :type => :ruote do
 
   it "should support 'reply anyway' on expression parameter" do
 
-    pdef = <<-EOF
-    class AmqpParticipant0 < OpenWFE::ProcessDefinition
+    #cmm -9
+    # pdef = <<-EOF
+    # class AmqpParticipant0 < OpenWFE::ProcessDefinition
 
+    #   sequence do
+    #     amqp :queue => 'test1', 'reply_anyway' => true
+    #     echo 'done.'
+    #   end
+    # end
+    # EOF
+
+    # cmm +6
+    pdef = Ruote.process_definition :name => 'amqpParticipant0' do
       sequence do
         amqp :queue => 'test1', 'reply_anyway' => true
         echo 'done.'
       end
     end
-    EOF
 
     @engine.register_participant( :amqp, RuoteAMQP::Participant )
 
@@ -38,15 +47,19 @@ describe RuoteAMQP::Participant, :type => :ruote do
   end
 
   it "should support 'reply anyway' as participant configuration" do
-    pdef = <<-EOF
-    class AmqpParticipant0 < OpenWFE::ProcessDefinition
 
+    #cmm -2
+    # pdef = <<-EOF
+    # class AmqpParticipant0 < OpenWFE::ProcessDefinition
+    #cmm +1
+    pdef = Ruote.process_definition :name => 'amqpParticipant0' do
       sequence do
         amqp :queue => 'test4'
         echo 'done.'
       end
     end
-    EOF
+    #cmm -1
+    # EOF
 
     p = RuoteAMQP::Participant.new( :reply_by_default => true )
     @engine.register_participant( :amqp, p )
@@ -73,15 +86,19 @@ describe RuoteAMQP::Participant, :type => :ruote do
   end
 
   it "should support custom messages instead of workitems" do
-    pdef = <<-EOF
-    class AmqpParticipant1 < OpenWFE::ProcessDefinition
 
+    #cmm -1
+    # pdef = <<-EOF
+    # class AmqpParticipant1 < OpenWFE::ProcessDefinition
+    #cmm +1
+    pdef = Ruote.process_definition :name => 'amqpParticipant1' do
       sequence do
         amqp :queue => 'test2', :message => 'foo', 'reply_anyway' => true
         echo 'done.'
       end
     end
-    EOF
+    #cmm -1
+    # EOF
 
     @engine.register_participant( :amqp, RuoteAMQP::Participant )
 
@@ -108,15 +125,18 @@ describe RuoteAMQP::Participant, :type => :ruote do
 
   it "should support a default queue name" do
 
-    pdef = <<-EOF
-    class AmqpParticipant0 < OpenWFE::ProcessDefinition
-
+    #cmm -2
+    # pdef = <<-EOF
+    # class AmqpParticipant0 < OpenWFE::ProcessDefinition
+    #cmm +1
+    pdef = Ruote.process_definition :name => 'amqpParticipant0' do
       sequence do
         amqp 'reply_anyway' => true
         echo 'done.'
       end
     end
-    EOF
+    #cmm -1
+    # EOF
 
     amqp = RuoteAMQP::Participant.new( :default_queue => 'test5' )
     @engine.register_participant( :amqp, amqp )
@@ -141,9 +161,11 @@ describe RuoteAMQP::Participant, :type => :ruote do
   end
 
   it "should support mapping participant names to queue names" do
-    pdef = <<-EOF
-    class AmqpParticipant0 < OpenWFE::ProcessDefinition
-
+    #cmm -2
+    # pdef = <<-EOF
+    # class AmqpParticipant0 < OpenWFE::ProcessDefinition
+    #cmm +1
+    pdef = Ruote.process_definition :name => 'amqpParticipant0' do
       sequence do
         q1
         q2
@@ -151,7 +173,8 @@ describe RuoteAMQP::Participant, :type => :ruote do
         echo 'done.'
       end
     end
-    EOF
+    #cmm -1
+    # EOF
 
     amqp = RuoteAMQP::Participant.new( :reply_by_default => true, :default_queue => 'test6' )
     amqp.map_participant( 'q1', 'test7' )

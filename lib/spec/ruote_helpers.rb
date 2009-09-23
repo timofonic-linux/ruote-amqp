@@ -7,6 +7,7 @@ module RuoteSpecHelpers
   end
 
   def run_definition( pdef )
+debugger
     fei = @engine.launch( pdef )
     wait( fei )
 
@@ -18,7 +19,9 @@ module RuoteSpecHelpers
 
   def wait( fei )
     Thread.pass
-    return if @terminated_processes.include?( fei.wfid )
+#cmm change 1; not a fix just for debugging purposes
+    return if @terminated_processes.include?( fei )
+#    return if @terminated_processes.include?( fei.wfid )
     @engine.wait_for( fei )
   end
 end

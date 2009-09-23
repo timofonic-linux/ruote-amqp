@@ -1,3 +1,5 @@
+$:.unshift('../amqp/lib') 
+debugger
 require 'mq'
  
 # AMQP participant and listener pair for ruote.

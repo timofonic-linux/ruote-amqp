@@ -34,7 +34,12 @@ module RuoteAMQP
   # to the correct direct exchange specified in the workitem
   # attributes.
   #
+#cmm +1
+require 'ruote/engine/context'
+
   class Listener
+
+debugger
     include Ruote::EngineContext
  
     class << self
