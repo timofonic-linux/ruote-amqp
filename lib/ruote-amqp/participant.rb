@@ -119,8 +119,6 @@ module RuoteAMQP
     # * :reply_by_default => (bool) false by default
     # * :default_queue => (string) nil by default
     def initialize( options = {} )
-      RuoteAMQP.ensure_reactor!
-
       @options = {
         :reply_by_default => false,
         :default_queue => nil
@@ -160,10 +158,6 @@ module RuoteAMQP
       end
     end
 
-    def stop
-      RuoteAMQP.shutdown_reactor!
-    end
-
     def cancel(fei, flavour)
     end
 
@@ -180,5 +174,6 @@ module RuoteAMQP
       wi.fields['params']['reply_queue'] = Listener.queue
       wi.to_h.to_json
     end
+
   end
 end
