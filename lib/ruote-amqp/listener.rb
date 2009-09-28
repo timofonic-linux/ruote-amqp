@@ -39,32 +39,21 @@ module RuoteAMQP
     include Ruote::EngineContext
 
     class << self
-
-      # Listening queue - set this before initialization
-      attr_writer :queue
-
-      def queue
-        @queue ||= 'ruote'
-      end
-
+      attr_accessor :queue
     end
 
     def initialize( options = {} )
-
-      if q = options.delete(:queue)
-        self.class.queue = q
-      end
-
-      RuoteAMQP.ensure_reactor!
-
-      MQ.queue( self.class.queue, :durable => true ).subscribe do |message|
-        workitem = decode_workitem( message )
-        engine.reply( workitem )
+      self.class.queue = options.delete(:queue) || 'ruote'
+      RuoteAMQP.with_reactor(:listener) do
+        MQ.queue( self.class.queue, :durable => true ).subscribe do |message|
+          workitem = decode_workitem( message )
+          engine.reply( workitem )
+        end
       end
     end
 
     def stop
-      RuoteAMQP.shutdown_reactor!
+      RuoteAMQP.stop(:listener)
     end
 
     private

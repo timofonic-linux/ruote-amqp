@@ -49,4 +49,5 @@ module RuoteAMQP
       @@active_threads.each{ |k, t| t.kill.join }.clear
     end
 
+  end
 end
