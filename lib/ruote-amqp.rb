@@ -39,7 +39,11 @@ module RuoteAMQP
 
       Thread.main[:ruote_amqp_connection] = Thread.new do
         Thread.abort_on_exception = true
-        AMQP.start { cv.signal }
+        AMQP.start do
+          ::RuoteAMQP.started!
+          yield if block_given?
+          cv.signal
+        end
       end
 
       mutex.synchronize { cv.wait(mutex) }
