@@ -1,9 +1,9 @@
 module RuoteAMQP
 
   #
-  # = AMQP Listeners
+  # = AMQP Workitem Listener
   #
-  # Used in conjunction with the RuoteAMQP::Participant, the Listener
+  # Used in conjunction with the RuoteAMQP::Participant, the WorkitemListener
   # subscribes to a specific direct exchange and monitors for
   # incoming workitems. It expects workitems to arrive serialized as
   # JSON.
@@ -12,10 +12,10 @@ module RuoteAMQP
   #
   # AMQP configuration is handled by directly manipulating the values of
   # the +AMQP.settings+ hash, as provided by the AMQP gem. No
-  # defaults are set by the participant. The only +option+ parsed by
-  # the initializer of the listener is the +queue+ key (Hash
+  # defaults are set by the listener. The only +option+ parsed by
+  # the initializer of the workitem listener is the +queue+ key (Hash
   # expected). If no +queue+ key is set, the listener will subscribe
-  # to the +ruote+ direct exchange for workitems, otherwise it will
+  # to the +ruote_workitems+ direct exchange for workitems, otherwise it will
   # subscribe to the direct exchange provided.
   #
   # The participant requires version 0.6.1 or later of the amqp gem.
@@ -24,9 +24,9 @@ module RuoteAMQP
   #
   # Register the listener with the engine:
   #
-  #   engine.register_listener( RuoteAMQP::Listener )
+  #   engine.register_listener( RuoteAMQP::WorkitemListener )
   #
-  # The listener leverages the asynchronous nature of the amqp gem,
+  # The workitem listener leverages the asynchronous nature of the amqp gem,
   # so no timers are setup when initialized.
   #
   # See the RuoteAMQP::Participant docs for information on sending
@@ -34,18 +34,33 @@ module RuoteAMQP
   # to the correct direct exchange specified in the workitem
   # attributes.
   #
-  class Listener
+  class WorkitemListener
 
     include Ruote::EngineContext
 
     class << self
-      attr_accessor :queue
+
+      # Listening queue - set this before initialization
+      attr_writer :queue
+
+      def queue
+        @queue ||= 'ruote_workitems'
+      end
+
     end
 
     def initialize( options = {} )
-      self.class.queue = options.delete(:queue) || 'ruote'
-      RuoteAMQP.with_reactor(:listener) do
-        MQ.queue( self.class.queue, :durable => true ).subscribe do |message|
+
+      if q = options.delete(:queue)
+        self.class.queue = q
+      end
+
+      RuoteAMQP.start!
+
+      MQ.queue( self.class.queue, :durable => true ).subscribe do |message|
+        if AMQP.closing?
+          # Do nothing, we're going down
+        else
           workitem = decode_workitem( message )
           engine.reply( workitem )
         end
@@ -53,7 +68,7 @@ module RuoteAMQP
     end
 
     def stop
-      RuoteAMQP.stop(:listener)
+      RuoteAMQP.stop!
     end
 
     private

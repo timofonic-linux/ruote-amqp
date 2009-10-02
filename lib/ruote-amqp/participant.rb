@@ -119,6 +119,8 @@ module RuoteAMQP
     # * :reply_by_default => (bool) false by default
     # * :default_queue => (string) nil by default
     def initialize( options = {} )
+      RuoteAMQP.start!
+
       @options = {
         :reply_by_default => false,
         :default_queue => nil
@@ -171,7 +173,7 @@ module RuoteAMQP
 
     # Encode (and extend) the workitem as JSON
     def encode_workitem( wi )
-      wi.fields['params']['reply_queue'] = Listener.queue
+      wi.fields['params']['reply_queue'] = WorkitemListener.queue
       wi.to_h.to_json
     end
 

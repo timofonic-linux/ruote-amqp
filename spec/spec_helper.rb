@@ -20,7 +20,7 @@ require 'spec/ruote'
 
 
 # AMQP magic worked here
-#AMQP.settings[:host]  = '172.16.133.50'
+AMQP.settings[:host]  = '172.16.133.50'
 AMQP.settings[:vhost] = '/ruote-test'
 AMQP.settings[:user]  = 'ruote'
 AMQP.settings[:pass]  = 'ruote'
@@ -47,7 +47,6 @@ Spec::Runner.configure do |config|
 
   config.after(:each) do
     @engine.stop
-    RuoteAMQP.shutdown_reactor!
   end
 
   config.after(:all) do

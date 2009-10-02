@@ -15,10 +15,11 @@ require 'mq'
 #
 module RuoteAMQP
 
-  VERSION = '2.0'
+  VERSION = '2.0.0'
 
-  autoload 'Participant', 'ruote-amqp/participant'
-  autoload 'Listener',    'ruote-amqp/listener'
+  autoload 'Participant',        'ruote-amqp/participant'
+  autoload 'WorkitemListener',   'ruote-amqp/workitem_listener'
+  autoload 'LaunchitemListener', 'ruote-amqp/launchitem_listener'
 
   class << self
 
@@ -29,24 +30,39 @@ module RuoteAMQP
       @use_persistent_messages ||= true
     end
 
-    private
-    @@active_threads = {}
+    # Ensure the AMQP connection is started
+    def start!
+      return if started?
 
-    public
-    def with_reactor(name, &blk)
-      @@active_threads[name] = Thread.new do
+      mutex = Mutex.new
+      cv = ConditionVariable.new
+
+      Thread.main[:ruote_amqp_connection] = Thread.new do
         Thread.abort_on_exception = true
-        EM.run(&blk)
+        AMQP.start { cv.signal }
       end
+
+      mutex.synchronize { cv.wait(mutex) }
+
+      MQ.prefetch(1)
     end
 
-    def stop(name = nil)
-      return nil unless thread = @@active_threads[name]
-      thread.kill.join
+    # Check whether the AMQP connection is started
+    def started?
+      Thread.main[:ruote_amqp_started] == true
     end
 
-    def shutdown #:nodoc:
-      @@active_threads.each{ |k, t| t.kill.join }.clear
+    def started! #:nodoc:
+      Thread.main[:ruote_amqp_started] = true
+    end
+
+    # Close down the AMQP connections
+    def stop!
+      return unless started?
+
+      AMQP.stop
+      Thread.main[:ruote_amqp_connection].join
+      Thread.main[:ruote_amqp_started] = false
     end
 
   end
