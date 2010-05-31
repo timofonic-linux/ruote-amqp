@@ -29,16 +29,16 @@ http://openwfe.rubyforge.org/part.html}
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<ruote>, ["= 0.9.21"])
-      s.add_runtime_dependency(%q<tmm1-amqp>, ["= 0.6.7"])
+      s.add_runtime_dependency(%q<amqp>, ["= 0.6.7"])
       s.add_development_dependency(%q<hoe>, [">= 2.4.0"])
     else
       s.add_dependency(%q<ruote>, ["= 0.9.21"])
-      s.add_dependency(%q<tmm1-amqp>, ["= 0.6.7"])
+      s.add_dependency(%q<amqp>, ["= 0.6.7"])
       s.add_dependency(%q<hoe>, [">= 2.4.0"])
     end
   else
     s.add_dependency(%q<ruote>, ["= 0.9.21"])
-    s.add_dependency(%q<tmm1-amqp>, ["= 0.6.7"])
+    s.add_dependency(%q<amqp>, ["= 0.6.7"])
     s.add_dependency(%q<hoe>, [">= 2.4.0"])
   end
 end

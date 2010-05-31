@@ -14,7 +14,7 @@ $hoe = Hoe.spec 'ruote-amqp' do
   self.developer 'Kenneth Kalmer', 'kenneth.kalmer@gmail.com'
   self.post_install_message = 'PostInstall.txt' # TODO remove if post-install message not required
   self.rubyforge_name       = self.name # TODO this is default value
-  self.extra_deps         = [['ruote','= 0.9.21'], ['tmm1-amqp', '= 0.6.7']]
+  self.extra_deps         = [['ruote','= 0.9.21'], ['amqp', '= 0.6.7']]
 
 end
 
