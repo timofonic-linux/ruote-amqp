@@ -1,7 +1,7 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{ruote-amqp}
+  s.name = %q{simianarmy-ruote-amqp}
   s.version = "0.9.21"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
@@ -19,7 +19,7 @@ http://openwfe.rubyforge.org/part.html}
   s.post_install_message = %q{PostInstall.txt}
   s.rdoc_options = ["--main", "README.rdoc"]
   s.require_paths = ["lib"]
-  s.rubyforge_project = %q{ruote-amqp}
+  s.rubyforge_project = %q{simianarmy-ruote-amqp}
   s.rubygems_version = %q{1.3.5}
   s.summary = %q{ruote-amqp provides an AMQP participant/listener pair that allows you to  distribute workitems out to AMQP consumers for processing}
 
