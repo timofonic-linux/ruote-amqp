@@ -102,7 +102,7 @@ module RuoteAMQP
 
       return unless item.is_a?(Hash)
 
-      not_li = ! item.has_key?('definition')
+      not_li = ! (item.has_key?('definition') or item.has_key?('register'))
 
       return if @launchitems == :only && not_li
       return unless @launchitems || not_li
@@ -110,7 +110,14 @@ module RuoteAMQP
       if not_li
         receive( item ) # workitem resumes in its process instance
       else
-        launch( item ) # new process instance launch
+        if item.has_key?('register')
+          return unless item.has_key?('name')
+          register_participant(item["name"],
+                               RuoteAMQP::Participant,
+                               item["options"])
+        else
+          launch( item ) # new process instance launch
+        end
       end
     end
 
