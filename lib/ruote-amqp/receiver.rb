@@ -68,7 +68,7 @@ module RuoteAMQP
     def initialize( engine_or_storage, opts = {} )
 
       super( engine_or_storage )
-
+      @engine_storage = engine_or_storage
       @launchitems = opts[:launchitems]
 
       @queue = 'ruote_workitems'
@@ -112,9 +112,9 @@ module RuoteAMQP
       else
         if item.has_key?('register')
           return unless item.has_key?('name')
-          register_participant(item["name"],
-                               RuoteAMQP::Participant,
-                               item["options"])
+          @engine_storage.register_participant(item["name"],
+                                               RuoteAMQP::Participant,
+                                               item["options"])
         else
           launch( item ) # new process instance launch
         end
