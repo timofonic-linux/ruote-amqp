@@ -146,7 +146,9 @@ module RuoteAMQP
 
       opts = {
         :persistent => RuoteAMQP.use_persistent_messages?,
-        :content_type => 'application/json' }
+        :content_type => 'application/json',
+        :reply_to => 'ruote_workitems',
+      }
 
       if message = workitem.fields['message'] || workitem.params['message']
 
