@@ -1,7 +1,7 @@
 
 require 'ruote/part/local_participant'
 require 'ruote-amqp'
-
+require 'AIR/Client'
 
 module RuoteAMQP
 
@@ -171,11 +171,15 @@ module RuoteAMQP
       RuoteAMQP.stop!
     end
 
+    # This is a rare event so setup/teardown the server as needed.
+    # Use the current AMQP settings
     def cancel( fei, flavour )
-      #
-      # TODO : sending a cancel item is not a bad idea, especially if the
-      #        job done over the amqp fence lasts...
-      #
+      remote_participant = AIR::Client.new(:host => AMQP.settings["host"],
+                                           :user => AMQP.settings["user"],
+                                           :pass => AMQP.settings["pass"],
+                                           :vhost => AMQPVM.settings["vhost"])
+      remote_participant.call("wfid:#{fei[wfid]}", :timeout => nil, :args => flavour)
+      remote_participant.stop!
     end
 
     private
