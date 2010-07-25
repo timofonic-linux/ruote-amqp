@@ -1,6 +1,6 @@
 
 require 'ruote-amqp'
-
+require 'AIR/Server'
 
 module RuoteAMQP
 
@@ -80,6 +80,14 @@ module RuoteAMQP
       MQ.queue( @queue ).unsubscribe # taking over...
       sleep 0.3
 
+      engine_proxy = AIR::Server.new(:host => AMQP.settings["host"],
+                                     :user => AMQP.settings["user"],
+                                     :pass => AMQP.settings["pass"],
+                                     :vhost => AMQP.settings["vhost"])
+
+      srv.register("register", method(:register_remote))
+      srv.register("list", method(:list_remote))
+
       MQ.queue( @queue, :durable => true ).subscribe do |message|
         if AMQP.closing?
           # do nothing, we're going down
@@ -88,9 +96,8 @@ module RuoteAMQP
         end
       end
     end
-
     def stop
-
+      engine_proxy.stop!
       RuoteAMQP.stop!
     end
 
@@ -110,21 +117,27 @@ module RuoteAMQP
       if not_li
         receive( item ) # workitem resumes in its process instance
       else
-        if item.has_key?('register')
-          return unless item.has_key?('name')
-          @engine_storage.register_participant(item["name"],
-                                               RuoteAMQP::Participant,
-                                               item["options"])
-        else
-          launch( item ) # new process instance launch
-        end
+        launch( item ) # new process instance launch
       end
     end
 
     def launch( hash )
-
       super(hash['definition'], hash['fields'] || {}, hash['variables'] || {})
+    end
+
+    # Called by the RPC mechanism from remote systems to register a participant
+    def register_remote(args, kwargs)
+      return unless kwargs.has_key?('name')
+      return @engine_storage.register_participant(kwargs["name"],
+                                                  RuoteAMQP::Participant,
+                                                  kwargs["options"])
+    end
+
+    # Called by the RPC mechanism from remote systems to get a list of participants
+    def list_remote(args, kwargs)
+      return @engine_storage.participant_list
     end
   end
 end
+
 
