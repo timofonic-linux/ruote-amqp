@@ -216,9 +216,7 @@ module RuoteAMQP
     # this participant.
     #
     def encode_workitem(wi)
-
       wi.params['participant_options'] = @options
-
       Rufus::Json.encode(wi.to_h)
     end
   end
@@ -236,6 +234,14 @@ module RuoteAMQP
       puts "please use RuoteAMQP::ParticipantProxy instead"
       puts '=' * 80
       super
+
+      # make sure the command and reply_queue given at create time are honoured
+      if !wi.params.has_key?('command') and @options.has_key?('command')
+        wi.params['command'] ||= @options['command']
+      end
+      if !wi.params.has_key?('reply_queue') and @options.has_key?('reply_queue')
+        wi.params['reply_queue'] = @options['reply_queue']
+      end
     end
   end
 end
