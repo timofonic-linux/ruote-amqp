@@ -123,6 +123,7 @@ module RuoteAMQP
       RuoteAMQP.start!
 
       @options = {
+        'reply_queue' => 'ruote_workitems',
         'queue' => nil,
         'forget' => false,
       }.merge( options.inject( {} ) { |h, ( k, v )| h[k.to_s] = v; h } )
