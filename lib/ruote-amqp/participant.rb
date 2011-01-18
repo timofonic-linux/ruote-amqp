@@ -197,6 +197,7 @@ module RuoteAMQP
     #
     def encode_workitem( wi )
 
+      wi.params['reply_queue'] ||= @options['reply_queue']
       wi.params['participant_options'] = @options
       wi.params['forget'] = @forget
 
