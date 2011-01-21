@@ -108,10 +108,36 @@ module RuoteAMQP
       return unless @launchitems || not_li
 
       if not_li
-        receive( item ) # workitem resumes in its process instance
+        error = item['fields']['__error__'] rescue nil
+        if error
+          handle_error( item )
+        else
+          receive( item ) # workitem resumes in its process instance
+        end
       else
         launch( item ) # new process instance launch
       end
+    end
+
+    class RemoteErrorClassProxy < Struct.new(:original_name)
+      def to_s; name; end
+      def name
+        "(Remote) #{original_name}"
+      end
+    end
+
+    class RemoteError < Struct.new(:name, :message, :backtrace)
+      def class
+        @class_proxy ||= RemoteErrorClassProxy.new(name)
+      end
+    end
+
+    def handle_error(workitem)
+      fields = workitem['fields']
+      class_name = fields['__error_class__'] || 'DispatchError'
+      exception = RemoteError.new( class_name, fields['__error__'], fields['__backtrace__'] )
+
+      @context.error_handler.action_handle('receive', workitem['fei'], exception)
     end
 
     def launch( hash )
