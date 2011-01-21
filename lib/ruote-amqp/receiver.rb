@@ -80,7 +80,7 @@ module RuoteAMQP
       MQ.queue( @queue ).unsubscribe # taking over...
       sleep 0.3
 
-      MQ.queue( @queue, :durable => true ).subscribe do |message|
+      MQ.queue( @queue ).subscribe do |message|
         if AMQP.closing?
           # do nothing, we're going down
         else
