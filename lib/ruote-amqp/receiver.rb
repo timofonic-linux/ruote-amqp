@@ -117,6 +117,8 @@ module RuoteAMQP
       else
         launch( item ) # new process instance launch
       end
+    rescue
+      DaemonKit.logger.error "//// FAIL SAFE ////\nError processing message:\n#{msg}\nThe following error was encountered handling the message:\n#{$!.message}\n#{$!.backtrace.join("\n")}"
     end
 
     class RemoteErrorClassProxy < Struct.new(:original_name)
