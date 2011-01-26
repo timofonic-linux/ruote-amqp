@@ -109,7 +109,8 @@ module RuoteAMQP
 
       if not_li
         error = item['fields']['__error__'] rescue nil
-        if error
+        # Stale error handling data can be kept in the same field as a hash
+        if error.is_a?(String)
           handle_error( item )
         else
           receive( item ) # workitem resumes in its process instance
