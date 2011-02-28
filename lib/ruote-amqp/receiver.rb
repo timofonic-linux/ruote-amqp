@@ -97,26 +97,27 @@ module RuoteAMQP
     private
 
     def handle( msg )
+      safely do
+        item = Rufus::Json.decode( msg ) rescue nil
 
-      item = Rufus::Json.decode( msg ) rescue nil
+        return unless item.is_a?(Hash)
 
-      return unless item.is_a?(Hash)
+        not_li = ! item.has_key?('definition')
 
-      not_li = ! item.has_key?('definition')
+        return if @launchitems == :only && not_li
+        return unless @launchitems || not_li
 
-      return if @launchitems == :only && not_li
-      return unless @launchitems || not_li
-
-      if not_li
-        error = item['fields']['__error__'] rescue nil
-        # Stale error handling data can be kept in the same field as a hash
-        if error.is_a?(String)
-          handle_error( item )
+        if not_li
+          error = item['fields']['__error__'] rescue nil
+          # Stale error handling data can be kept in the same field as a hash
+          if error.is_a?(String)
+            handle_error( item )
+          else
+            receive( item ) # workitem resumes in its process instance
+          end
         else
-          receive( item ) # workitem resumes in its process instance
+          launch( item ) # new process instance launch
         end
-      else
-        launch( item ) # new process instance launch
       end
     rescue
       DaemonKit.logger.error "//// FAIL SAFE ////\nError processing message:\n#{msg}\nThe following error was encountered handling the message:\n#{$!.message}\n#{$!.backtrace.join("\n")}"
