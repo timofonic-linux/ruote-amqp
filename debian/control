@@ -1,0 +1,20 @@
+Source: ruote-amqp
+Section: ruby
+Priority: optional
+Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
+Uploaders:  <>
+DM-Upload-Allowed: yes
+Build-Depends: debhelper (>= 7.0.50~), gem2deb (>= 0.1.0)
+Standards-Version: 3.9.1
+#Vcs-Git: git://git.debian.org/collab-maint/libnet-jabber-loudmouth-perl.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/libnet-jabber-loudmouth-perl.git;a=summary
+Homepage: http://ruote.rubyforge.org
+
+Package: ruby-ruote-amqp
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}
+# amqp (= 0.7.0), ruote (>= 2.2.0), rake (>= 0), rspec (>= 2.2.1)
+Description: AMQP participant/listener pair for ruote 2.1
+ .\n AMQP participant/listener pair for ruote 2.1
+ .\n
+
