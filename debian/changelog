@@ -1,10 +1,10 @@
-ruote-amqp (2.2.0-3) unstable; urgency=low
+ruby-ruote-amqp (2.2.0-3) unstable; urgency=low
 
   * Add dependencies on ruby-ruote and ruby-amqp
 
  -- David Greaves <david@dgreaves.com>  Mon, 28 Mar 2011 11:05:48 +0100
 
-ruote-amqp (2.2.0-1) UNRELEASED; urgency=low
+ruby-ruote-amqp (2.2.0-1) UNRELEASED; urgency=low
 
   * Initial release based on gem2deb
 
