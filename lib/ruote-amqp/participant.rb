@@ -121,6 +121,7 @@ module RuoteAMQP
     def initialize(options)
 
       @options = {
+        'reply_queue' => 'ruote_workitems',
         'queue' => nil,
         'forget' => false,
       }.merge(options.inject({}) { |h, (k, v)|
@@ -218,6 +219,7 @@ module RuoteAMQP
     #
     def encode_workitem(wi)
 
+      wi.params['reply_queue'] ||= @options['reply_queue']
       wi.params['participant_options'] = @options
 
       Rufus::Json.encode(wi.to_h)

@@ -82,7 +82,7 @@ module RuoteAMQP
         sleep 0.300
       end
 
-      MQ.queue(@queue, :durable => true).subscribe do |message|
+      MQ.queue( @queue ).subscribe do |message|
         if AMQP.closing?
           # do nothing, we're going down
         else
@@ -106,39 +106,54 @@ module RuoteAMQP
     private
 
     def handle(msg)
+      safely do
+        item = decode_workitem(msg)
 
-      item = decode_workitem(msg)
+        return unless item.is_a?(Hash)
 
-      return unless item.is_a?(Hash)
+        not_li = ! item.has_key?('definition')
 
-      not_li = ! item.has_key?('definition')
+        return if @launchitems == :only && not_li
+        return unless @launchitems || not_li
 
-      return if @launchitems == :only && not_li
-      return unless @launchitems || not_li
-
-      if not_li
-        receive(item) # workitem resumes in its process instance
-      else
-        launch(item) # new process instance launch
+        if not_li
+          error = item['fields']['__error__'] rescue nil
+          # Stale error handling data can be kept in the same field as a hash
+          if error.is_a?(String)
+            handle_error( item )
+          else
+            receive( item ) # workitem resumes in its process instance
+          end
+        else
+          launch( item ) # new process instance launch
+        end
       end
-
-    rescue => e
-      # something went wrong
-      # let's simply discard the message
-      $stderr.puts('=' * 80)
-      $stderr.puts(self.class.name)
-      $stderr.puts("couldn't handle incoming message :")
-      $stderr.puts('')
-      $stderr.puts(msg.inspect)
-      $stderr.puts('')
-      $stderr.puts(Rufus::Json.pretty_encode(item)) rescue nil
-      $stderr.puts('')
-      $stderr.puts(e.inspect)
-      $stderr.puts(e.backtrace)
-      $stderr.puts('=' * 80)
+    rescue
+      DaemonKit.logger.error "//// FAIL SAFE ////\nError processing message:\n#{msg}\nThe following error was encountered handling the message:\n#{$!.message}\n#{$!.backtrace.join("\n")}"
     end
 
-    def launch(hash)
+    class RemoteErrorClassProxy < Struct.new(:original_name)
+      def to_s; name; end
+      def name
+        "(Remote) #{original_name}"
+      end
+    end
+
+    class RemoteError < Struct.new(:name, :message, :backtrace)
+      def class
+        @class_proxy ||= RemoteErrorClassProxy.new(name)
+      end
+    end
+
+    def handle_error(workitem)
+      fields = workitem['fields']
+      class_name = fields['__error_class__'] || 'DispatchError'
+      exception = RemoteError.new( class_name, fields['__error__'], fields['__backtrace__'] )
+
+      @context.error_handler.action_handle('receive', workitem['fei'], exception)
+    end
+
+    def launch( hash )
 
       super(hash['definition'], hash['fields'] || {}, hash['variables'] || {})
     end
