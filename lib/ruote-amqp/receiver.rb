@@ -75,25 +75,15 @@ module RuoteAMQP
         opts[:queue] ||
         (@launchitems == :only ? 'ruote_launchitems' : 'ruote_workitems')
 
-      RuoteAMQP.start!
-
-      if opts[:unsubscribe]
-        MQ.queue(@queue, :durable => true).unsubscribe
-        sleep 0.300
-      end
-
-      MQ.queue( @queue ).subscribe do |message|
-        if AMQP.closing?
-          # do nothing, we're going down
-        else
-          handle(message)
+      AMQP::Channel.new do |channel, open_ok|
+        channel.queue(@queue, :durable => true) do |q|
+          q.subscribe do |msg|
+            unless channel.connection.closing?
+              handle(msg)
+            end
+          end
         end
       end
-    end
-
-    def stop
-
-      RuoteAMQP.stop!
     end
 
     # (feel free to overwrite me)

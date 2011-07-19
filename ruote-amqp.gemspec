@@ -21,7 +21,7 @@ AMQP participant/listener pair for ruote 2.1
     '*.gemspec', '*.txt', '*.rdoc', '*.md'
   ]
 
-  s.add_runtime_dependency 'amqp', '~> 0.7.0'
+  s.add_runtime_dependency 'amqp', '~> 0.8.0.rc'
   s.add_runtime_dependency 'ruote', "~> 2.2.0"
 
   s.add_development_dependency 'rake'

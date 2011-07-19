@@ -138,40 +138,35 @@ module RuoteAMQP
     #
     def consume(workitem)
 
-      RuoteAMQP.start!
-
       target_queue = determine_queue(workitem)
 
       raise 'no queue specified (outbound delivery)' unless target_queue
 
-      q = MQ.queue(target_queue, :durable => true)
       forget = determine_forget(workitem)
 
-      opts = {
-        :persistent => RuoteAMQP.use_persistent_messages?,
-        :content_type => 'application/json' }
+      AMQP::Channel.new do |channel, open_ok|
+        channel.queue(target_queue, :durable => true) do |q|
 
-      if message = workitem.fields['message'] || workitem.params['message']
+          opts = {
+            :persistent => RuoteAMQP.use_persistent_messages?,
+            :content_type => 'application/json' }
 
-        forget = true # sending a message implies 'forget' => true
+          if message = workitem.fields['message'] || workitem.params['message']
 
-        q.publish(message, opts)
+            forget = true # sending a message implies 'forget' => true
 
-      else
+            q.publish(message, opts)
 
-        wi = encode_workitem(workitem)
-        raise ArgumentError, "encoded workitem is nil" if wi.nil?
-        q.publish(wi, opts)
+          else
+
+            wi = encode_workitem(workitem)
+            raise ArgumentError, "encoded workitem is nil" if wi.nil?
+            q.publish(wi, opts)
+          end
+
+          reply_to_engine(workitem) if forget
+        end
       end
-
-      reply_to_engine(workitem) if forget
-    end
-
-    # (Stops the underlying queue subscription)
-    #
-    def stop
-
-      RuoteAMQP.stop!
     end
 
     def cancel(fei, flavour)
