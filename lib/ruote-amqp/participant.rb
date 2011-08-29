@@ -144,7 +144,7 @@ module RuoteAMQP
 
       forget = determine_forget(workitem)
 
-      AMQP::Channel.new do |channel, open_ok|
+      on_channel do |channel|
         channel.queue(target_queue, :durable => true) do |q|
 
           opts = {
@@ -166,6 +166,13 @@ module RuoteAMQP
 
           reply_to_engine(workitem) if forget
         end
+      end
+    end
+
+    def on_channel
+      @channel ||= AMQP::Channel.new
+      @channel.once_open do
+        yield @channel
       end
     end
 
