@@ -144,36 +144,32 @@ module RuoteAMQP
 
       forget = determine_forget(workitem)
 
-      on_channel do |channel|
-        channel.queue(target_queue, :durable => true) do |q|
+      channel.queue(target_queue, :durable => true) do |q|
+        # Inside this loop is a different thread, so if you access
+        # channel, it will create a new channel each time this method
+        # is called!
+        
+        opts = {
+          :persistent => RuoteAMQP.use_persistent_messages?,
+          :content_type => 'application/json' }
 
-          opts = {
-            :persistent => RuoteAMQP.use_persistent_messages?,
-            :content_type => 'application/json' }
-
-          if message = workitem.fields['message'] || workitem.params['message']
-
-            forget = true # sending a message implies 'forget' => true
-
-            q.publish(message, opts)
-
-          else
-
-            wi = encode_workitem(workitem)
-            raise ArgumentError, "encoded workitem is nil" if wi.nil?
-            q.publish(wi, opts)
-          end
-
-          reply_to_engine(workitem) if forget
+        if message = workitem.fields['message'] || workitem.params['message']
+          forget = true # sending a message implies 'forget' => true
+        else
+          message = encode_workitem(workitem)
+          raise ArgumentError, "encoded workitem is nil" if message.nil?
         end
+
+        q.publish(message, opts)
+
+        reply_to_engine(workitem) if forget
       end
     end
 
-    def on_channel
-      @channel ||= AMQP::Channel.new
-      @channel.once_open do
-        yield @channel
-      end
+    # Use Thread local storage because a new instance of this class is
+    # created for each request
+    def channel
+      Thread.current[:ruote_amqp_participant_channel] ||= AMQP::Channel.new
     end
 
     def cancel(fei, flavour)
