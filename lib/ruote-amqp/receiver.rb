@@ -42,6 +42,19 @@ module RuoteAMQP
   #
   class Receiver < Ruote::Receiver
 
+    # error handling based on https://github.com/jmettraux/ruote-beanstalk/blob/master/lib/ruote/beanstalk/receiver.rb#L36
+
+    class ReceiveError < RuntimeError
+
+      attr_reader :fei
+
+      def initialize(fei,errmsg)
+        @fei = fei
+        super(errmsg)
+      end
+    end
+
+
     attr_reader :queue
 
     # Starts a new Receiver
@@ -117,7 +130,13 @@ module RuoteAMQP
       return unless @launchitems || not_li
 
       if not_li
-        receive(item) # workitem resumes in its process instance
+        if item.has_key?('fields') and item['fields'].has_key?('__error__')
+          # a workitem that resulted in an error
+          @context.error_handler.action_handle('dispatch', item['fei'],
+                   ReceiveError.new(item['fei'],item['fields']['__error__']))
+        else
+          receive(item) # workitem resumes in its process instance
+        end
       else
         launch(item) # new process instance launch
       end
