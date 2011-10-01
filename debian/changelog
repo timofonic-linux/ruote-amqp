@@ -1,3 +1,10 @@
+ruby-ruote-amqp (2.2.0.1-1) unstable; urgency=low
+
+  * New upstream
+  * Add patch to support receiving error conditions via AMQP
+  
+ -- David Greaves <david@dgreaves.com>  Sat, 01 Oct 2011 22:02:21 +0000
+
 ruby-ruote-amqp (2.2.0-4) unstable; urgency=low
 
   * Updated packaging to gem2deb 0.2.1
