@@ -17,7 +17,7 @@
 
 # norootforbuild
 Name:           rubygem-ruote-amqp
-Version:        2.2.0
+Version:        2.2.0.1
 Release:        0
 %define mod_name ruote-amqp
 #
@@ -29,6 +29,8 @@ BuildRequires:  rubygems_with_buildroot_patch
 %rubygems_requires
 BuildRequires:  rubygem-amqp >= 0.7.0
 Requires:       rubygem-amqp >= 0.7.0
+BuildRequires:  rubygem-amqp < 0.7.1
+Requires:       rubygem-amqp < 0.7.1
 BuildRequires:  rubygem-ruote >= 2.2.0
 Requires:       rubygem-ruote >= 2.2.0
 #
