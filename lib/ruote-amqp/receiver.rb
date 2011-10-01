@@ -9,8 +9,17 @@ module RuoteAMQP
   #
   # Used in conjunction with the RuoteAMQP::Participant, the WorkitemListener
   # subscribes to a specific direct exchange and monitors for
-  # incoming workitems. It expects workitems to arrive serialized as
-  # JSON.
+  # incoming messages.
+  #
+  # It expects workitems to arrive serialized as JSON.
+  #
+  # If an error has occured then the incoming workitem should have a
+  # top level 'error' key set with descriptive information about the
+  # error. The process will then go into an error state.
+  #
+  # If the incoming JSON has a top level 'definition' key then this
+  # item is taken to be a process definition to launch.
+  #
   #
   # == Configuration
   #
@@ -124,19 +133,20 @@ module RuoteAMQP
 
       return unless item.is_a?(Hash)
 
+      if item.has_key?('error')
+        # a workitem that resulted in an error
+        @context.error_handler.action_handle('dispatch', item['fei'],
+                                             ReceiveError.new(item['fei'], item['error']))
+        return
+      end
+      
       not_li = ! item.has_key?('definition')
 
       return if @launchitems == :only && not_li
       return unless @launchitems || not_li
 
       if not_li
-        if item.has_key?('fields') and item['fields'].has_key?('__error__')
-          # a workitem that resulted in an error
-          @context.error_handler.action_handle('dispatch', item['fei'],
-                   ReceiveError.new(item['fei'],item['fields']['__error__']))
-        else
-          receive(item) # workitem resumes in its process instance
-        end
+        receive(item) # workitem resumes in its process instance
       else
         launch(item) # new process instance launch
       end
