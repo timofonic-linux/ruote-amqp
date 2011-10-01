@@ -1,3 +1,11 @@
+ruby-ruote-amqp (2.2.0-5) unstable; urgency=low
+
+  * First version of receiving error conditions via AMQP (so far tested
+    only with python-ruote-amqp, see TODO comments in
+    https://meego.gitorious.org/~ugeuder/meego-infrastructure-tools/ugeuders-ruote-amqp-pyclient/blobs/a30385d14911c72b1d0c3cc10d93a818c9d81ca7/RuoteAMQP/participant.py#line92
+
+ -- Uwe Geuder <uwe.geuder@nomovok.com>  Fri, 30 Sep 2011 17:18:19 +0300
+
 ruby-ruote-amqp (2.2.0-4) unstable; urgency=low
 
   * Updated packaging to gem2deb 0.2.1
