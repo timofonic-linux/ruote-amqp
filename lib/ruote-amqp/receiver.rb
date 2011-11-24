@@ -59,7 +59,12 @@ module RuoteAMQP
 
       def initialize(fei,errmsg)
         @fei = fei
+        @msg = errmsg
         super(errmsg)
+      end
+
+      def inspect()
+          return @msg
       end
     end
 
@@ -135,8 +140,11 @@ module RuoteAMQP
 
       if item.has_key?('error')
         # a workitem that resulted in an error
-        @context.error_handler.action_handle('dispatch', item['fei'],
-                                             ReceiveError.new(item['fei'], item['error']))
+        exc = ReceiveError.new(item['fei'], item['error'])
+        if item.has_key?('trace')
+            exc.set_backtrace(item['trace'])
+        end
+        @context.error_handler.action_handle('dispatch', item['fei'], exc)
         return
       end
       
