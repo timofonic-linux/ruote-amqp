@@ -1,3 +1,9 @@
+ruby-ruote-amqp (2.2.0.1-2.1) unstable; urgency=low
+
+  * Loosen deps for new ruby-amqp
+
+ -- Islam Amer <islam.amer@nokia.com>  Thu, 19 Jan 2012 00:26:27 +0200
+
 ruby-ruote-amqp (2.2.0.1-1.1) unstable; urgency=low
 
   * Convey backtrace to ruote
