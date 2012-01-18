@@ -1,0 +1,13 @@
+diff --git a/ruote-amqp.gemspec b/ruote-amqp.gemspec
+index 96314f3..7645ee4 100644
+--- a/ruote-amqp.gemspec
++++ b/ruote-amqp.gemspec
+@@ -21,7 +21,7 @@ AMQP participant/listener pair for ruote 2.1
+     '*.gemspec', '*.txt', '*.rdoc', '*.md'
+   ]
+ 
+-  s.add_runtime_dependency 'amqp', '~> 0.7.0'
++  s.add_runtime_dependency 'amqp', '>= 0.7.0'
+   s.add_runtime_dependency 'ruote', "~> 2.2.0"
+ 
+   s.add_development_dependency 'rake'

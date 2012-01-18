@@ -27,10 +27,8 @@ License:        GPLv2+ or Ruby
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 BuildRequires:  rubygems_with_buildroot_patch
 %rubygems_requires
-BuildRequires:  rubygem-amqp >= 0.7.0
-Requires:       rubygem-amqp >= 0.7.0
-BuildRequires:  rubygem-amqp < 0.7.1
-Requires:       rubygem-amqp < 0.7.1
+BuildRequires:  rubygem-amqp
+Requires:       rubygem-amqp
 BuildRequires:  rubygem-ruote >= 2.2.0
 Requires:       rubygem-ruote >= 2.2.0
 #
