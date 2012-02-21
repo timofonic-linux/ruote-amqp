@@ -242,6 +242,7 @@ module RuoteAMQP
       if !wi.params.has_key?('reply_queue') and @options.has_key?('reply_queue')
         wi.params['reply_queue'] = @options['reply_queue']
       end
+      Rufus::Json.encode( wi.to_h )
     end
   end
 end
