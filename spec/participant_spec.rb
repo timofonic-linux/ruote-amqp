@@ -167,13 +167,12 @@ describe RuoteAMQP::ParticipantProxy, :type => :ruote do
   end
 
   it "doesn't create 1 queue instance per delivery" do
-
     pdef = ::Ruote.process_definition do
       amqp :queue => 'test7', :forget => true
     end
 
     mq_count = 0
-    ObjectSpace.each_object(MQ) { |o| mq_count += 1 }
+    ObjectSpace.each_object(AMQP::Queue) { |o| mq_count += 1 }
 
     @engine.register_participant(:amqp, RuoteAMQP::ParticipantProxy)
 
@@ -184,7 +183,7 @@ describe RuoteAMQP::ParticipantProxy, :type => :ruote do
     sleep 1
 
     count = 0
-    ObjectSpace.each_object(MQ) { |o| count += 1 }
+    ObjectSpace.each_object(AMQP::Queue) { |o| count += 1 }
 
     count.should == mq_count + 1
   end
