@@ -1,5 +1,5 @@
 
-require 'mq'
+require 'amqp'
 
 require 'ruote-amqp/version'
 
