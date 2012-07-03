@@ -53,7 +53,7 @@ module RuoteAMQP
 
       mutex.synchronize { cv.wait(mutex) }
 
-      MQ.prefetch(1)
+      AMQP.channel.prefetch(1)
 
       yield if block_given?
     end
