@@ -78,11 +78,11 @@ module RuoteAMQP
       RuoteAMQP.start!
 
       if opts[:unsubscribe]
-        MQ.queue(@queue, :durable => true).unsubscribe
+        AMQP.channel.queue(@queue, :durable => true).unsubscribe
         sleep 0.300
       end
 
-      MQ.queue(@queue, :durable => true).subscribe do |message|
+      AMQP.channel.queue(@queue, :durable => true).subscribe do |message|
         if AMQP.closing?
           # do nothing, we're going down
         else

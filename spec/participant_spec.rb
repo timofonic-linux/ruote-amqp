@@ -22,7 +22,7 @@ describe RuoteAMQP::ParticipantProxy, :type => :ruote do
     begin
       Timeout::timeout(10) do
         @msg = nil
-        MQ.queue('test1', :durable => true).subscribe { |msg| @msg = msg }
+        AMQP.channel.queue('test1', :durable => true).subscribe { |msg| @msg = msg }
 
         loop do
           break unless @msg.nil?
@@ -55,7 +55,7 @@ describe RuoteAMQP::ParticipantProxy, :type => :ruote do
     begin
       Timeout::timeout(5) do
         @msg = nil
-        MQ.queue('test4', :durable => true).subscribe { |msg| @msg = msg }
+        AMQP.channel.queue('test4', :durable => true).subscribe { |msg| @msg = msg }
 
         loop do
           break unless @msg.nil?
@@ -87,7 +87,7 @@ describe RuoteAMQP::ParticipantProxy, :type => :ruote do
     begin
       Timeout::timeout(5) do
         @msg = nil
-        MQ.queue('test2', :durable => true).subscribe { |msg| @msg = msg }
+        AMQP.channel.queue('test2', :durable => true).subscribe { |msg| @msg = msg }
 
         loop do
           break unless @msg.nil?
@@ -120,7 +120,7 @@ describe RuoteAMQP::ParticipantProxy, :type => :ruote do
     begin
       Timeout::timeout(5) do
         @msg = nil
-        MQ.queue('test5', :durable => true).subscribe { |msg| @msg = msg }
+        AMQP.channel.queue('test5', :durable => true).subscribe { |msg| @msg = msg }
 
         loop do
           break unless @msg.nil?
@@ -147,7 +147,7 @@ describe RuoteAMQP::ParticipantProxy, :type => :ruote do
     begin
       Timeout::timeout(10) do
 
-        MQ.queue('test6', :durable => true).subscribe { |m| msg = m }
+        AMQP.channel.queue('test6', :durable => true).subscribe { |m| msg = m }
 
         loop do
           break unless msg.nil?

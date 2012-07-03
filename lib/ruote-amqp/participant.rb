@@ -143,7 +143,7 @@ module RuoteAMQP
 
       raise 'no queue specified (outbound delivery)' unless target_queue
 
-      q = MQ.queue(target_queue, :durable => true)
+      q = AMQP.channel.queue(target_queue, :durable => true)
       forget = determine_forget(workitem)
 
       opts = {

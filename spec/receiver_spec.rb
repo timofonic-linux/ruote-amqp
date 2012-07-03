@@ -32,7 +32,7 @@ describe RuoteAMQP::Receiver do
     begin
       Timeout::timeout(5) do
 
-        MQ.queue('test3', :durable => true).subscribe { |msg|
+        AMQP.channel.queue('test3', :durable => true).subscribe { |msg|
           wi = Ruote::Workitem.new(Rufus::Json.decode(msg))
           workitem = wi if wi.wfid == wfid
         }
@@ -48,7 +48,7 @@ describe RuoteAMQP::Receiver do
 
     workitem.fields['foo'] = "bar"
 
-    MQ.queue('ruote_workitems', :durable => true).publish(Rufus::Json.encode(workitem.to_h), :persistent => true)
+    AMQP.channel.queue('ruote_workitems', :durable => true).publish(Rufus::Json.encode(workitem.to_h), :persistent => true)
 
     @engine.wait_for(wfid)
 
@@ -73,7 +73,7 @@ describe RuoteAMQP::Receiver do
 
     RuoteAMQP::Receiver.new(@engine, :launchitems => true, :unsubscribe => true)
 
-    MQ.queue(
+    AMQP.channel.queue(
       'ruote_workitems', :durable => true
     ).publish(
       json, :persistent => true
@@ -100,7 +100,7 @@ describe RuoteAMQP::Receiver do
       'definition' => "Ruote.define { alpha }"
     })
 
-    MQ.queue(
+    AMQP.channel.queue(
       'ruote_workitems', :durable => true
     ).publish(
       json, :persistent => true
@@ -111,7 +111,7 @@ describe RuoteAMQP::Receiver do
     @engine.processes.size.should == 0
       # nothing happened
 
-    MQ.queue(
+    AMQP.channel.queue(
       'mario', :durable => true
     ).publish(
       json, :persistent => true
