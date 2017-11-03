@@ -1,0 +1,22 @@
+Source: ruby-ruote-amqp
+Section: ruby
+Priority: optional
+Maintainer: Debian Ruby Extras Maintainers <pkg-ruby-extras-maintainers@lists.alioth.debian.org>
+Uploaders:  <>
+DM-Upload-Allowed: yes
+Build-Depends: debhelper (>= 7.0.50~), gem2deb (>= 0.2.1)
+Standards-Version: 3.9.1
+#Vcs-Git: git://git.debian.org/pkg-ruby-extras/ruby-ruote-amqp.git
+#Vcs-Browser: http://git.debian.org/?p=pkg-ruby-extras/ruby-ruote-amqp;a=summary
+Homepage: http://ruote.rubyforge.org
+XS-Ruby-Versions: all
+
+Package: ruby-ruote-amqp
+Architecture: all
+XB-Ruby-Versions: ${ruby:Versions}
+Depends: ${shlibs:Depends}, ${misc:Depends}, ruby1.8 | ruby-interpreter, ruby-amqp (>= 0.7.0), ruby-ruote (>= 2.2.0)
+# amqp (= 0.7.0, runtime), ruote (>= 2.2.0, runtime), rake (>= 0, development), rspec (>= 2.2.1, development)
+Description: AMQP participant/listener pair for ruote 2.1
+ .
+ AMQP participant/listener pair for ruote 2.1
+ .
