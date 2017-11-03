@@ -101,7 +101,7 @@ module Ruote::Amqp
       super(engine_or_storage, Ruote.keys_to_s(options))
 
       @queue = queue
-      @queue.subscribe(&method(:handle))
+      @queue.subscribe(:ack => 1, &method(:handle))
     end
 
     def shutdown
@@ -124,6 +124,8 @@ module Ruote::Amqp
       else
         raise ArgumentError.new("cannot receive or launch #{item.inspect}")
       end
+
+      header.ack
 
     rescue => e
       handle_error(e)
